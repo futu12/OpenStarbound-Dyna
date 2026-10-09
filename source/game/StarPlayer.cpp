@@ -1925,10 +1925,10 @@ void Player::processStateChanges(float dt) {
     }
   }
   if (world()->isClient()) {
-    humanoid()->animate(dt, &m_humanoidDynamicTarget);
+    humanoid()->animate(dt, &m_humanoidDynamicTarget, m_movementController->velocity());
     m_humanoidDynamicTarget.updatePosition(position() + (m_techController->parentOffset()));
   } else {
-    humanoid()->animate(dt, {});
+    humanoid()->animate(dt, {}, m_movementController->velocity());
   }
   m_scriptedAnimator.update();
 
@@ -2630,7 +2630,7 @@ bool Player::invisible() const {
 }
 
 void Player::animatePortrait(float dt) {
-  humanoid()->animate(dt, {});
+  humanoid()->animate(dt, {}, {});
   if (m_emoteCooldownTimer.tick(dt))
     m_emoteState = HumanoidEmote::Idle;
   humanoid()->setEmoteState(m_emoteState);

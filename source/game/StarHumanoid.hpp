@@ -174,6 +174,7 @@ public:
   struct WornChest : WornAny {
     String frontSleeveFrameset;
     String backSleeveFrameset;
+    bool dynamics = true;
   };
   // Must have :idle, :duck, :walk[1-8], :run[1-8], :jump[1-4], :fall[1-4]
   struct WornLegs : WornAny {};
@@ -251,7 +252,7 @@ public:
 
   // Updates the animation based on whatever the current animation state is,
   // wrapping or clamping animation time as appropriate.
-  void animate(float dt, NetworkedAnimator::DynamicTarget * dynamicTarget);
+  void animate(float dt, NetworkedAnimator::DynamicTarget * dynamicTarget, Maybe<Vec2F> velocity = {});
 
   // Reset animation time to 0.0f
   void resetAnimation();
@@ -461,6 +462,10 @@ private:
 
   HumanoidIdentity m_identity;
   HumanoidTiming m_timing;
+
+  Vec2F m_chestDynamicsOffset;
+  Vec2F m_chestDynamicsVelocity;
+  Maybe<Vec2F> m_lastVelocity;
 
   float m_animationTimer;
   float m_emoteAnimationTimer;
