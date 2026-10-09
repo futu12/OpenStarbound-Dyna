@@ -1313,30 +1313,36 @@ List<Drawable> Humanoid::render(bool withItems, bool withRotationAndScale) {
       String image = strf("{}:{}",bodyFrameset,frameName);
 
       bool applyDynamics = m_identity.gender == Gender::Female;
-      String basePath = bodyFrameset.substr(0, bodyFrameset.findLast("/")) + "/dynamic/base/" + bodyFrameset.substr(bodyFrameset.findLast("/") + 1);
-      String dynamicPath = bodyFrameset.substr(0, bodyFrameset.findLast("/")) + "/dynamic/" + bodyFrameset.substr(bodyFrameset.findLast("/") + 1);
+      bool handledDynamics = false;
+      if (applyDynamics && bodyFrameset.findLast("/") != NPos) {
+        String basePath = bodyFrameset.substr(0, bodyFrameset.findLast("/")) + "/dynamic/base/" + bodyFrameset.substr(bodyFrameset.findLast("/") + 1);
+        String dynamicPath = bodyFrameset.substr(0, bodyFrameset.findLast("/")) + "/dynamic/" + bodyFrameset.substr(bodyFrameset.findLast("/") + 1);
 
-      if (applyDynamics && Root::singleton().assets()->assetExists(AssetPath::split(basePath).basePath)) {
-        String baseImage = String(image).replace(bodyFrameset, basePath);
-        auto baseDrawable = Drawable::makeImage(m_useBodyHeadMask ? baseImage : std::move(baseImage), 1.0f / TilePixels, true, {});
-        baseDrawable.imagePart().addDirectives(bodyDirectives, true);
-        if (m_useBodyMask && !bodyMaskFrameset.empty()) {
-          String maskImage = strf("{}:{}",bodyMaskFrameset,frameName);
-          Directives maskDirectives = "?addmask="+maskImage+";0;0";
-          baseDrawable.imagePart().addDirectives(maskDirectives, true);
-        }
-        addDrawable(std::move(baseDrawable), m_bodyFullbright);
+        if (Root::singleton().assets()->assetExists(AssetPath::split(basePath).basePath) && Root::singleton().assets()->assetExists(AssetPath::split(dynamicPath).basePath)) {
+          String baseImage = String(image).replace(bodyFrameset, basePath);
+          auto baseDrawable = Drawable::makeImage(m_useBodyHeadMask ? baseImage : std::move(baseImage), 1.0f / TilePixels, true, {});
+          baseDrawable.imagePart().addDirectives(bodyDirectives, true);
+          if (m_useBodyMask && !bodyMaskFrameset.empty()) {
+            String maskImage = strf("{}:{}",bodyMaskFrameset,frameName);
+            Directives maskDirectives = "?addmask="+maskImage+";0;0";
+            baseDrawable.imagePart().addDirectives(maskDirectives, true);
+          }
+          addDrawable(std::move(baseDrawable), m_bodyFullbright);
 
-        String dynamicImage = String(image).replace(bodyFrameset, dynamicPath);
-        auto dynamicDrawable = Drawable::makeImage(m_useBodyHeadMask ? dynamicImage : std::move(dynamicImage), 1.0f / TilePixels, true, m_chestDynamicsOffset);
-        dynamicDrawable.imagePart().addDirectives(bodyDirectives, true);
-        if (m_useBodyMask && !bodyMaskFrameset.empty()) {
-          String maskImage = strf("{}:{}",bodyMaskFrameset,frameName);
-          Directives maskDirectives = "?addmask="+maskImage+";0;0";
-          dynamicDrawable.imagePart().addDirectives(maskDirectives, true);
+          String dynamicImage = String(image).replace(bodyFrameset, dynamicPath);
+          auto dynamicDrawable = Drawable::makeImage(m_useBodyHeadMask ? dynamicImage : std::move(dynamicImage), 1.0f / TilePixels, true, m_chestDynamicsOffset);
+          dynamicDrawable.imagePart().addDirectives(bodyDirectives, true);
+          if (m_useBodyMask && !bodyMaskFrameset.empty()) {
+            String maskImage = strf("{}:{}",bodyMaskFrameset,frameName);
+            Directives maskDirectives = "?addmask="+maskImage+";0;0";
+            dynamicDrawable.imagePart().addDirectives(maskDirectives, true);
+          }
+          addDrawable(std::move(dynamicDrawable), m_bodyFullbright);
+          handledDynamics = true;
         }
-        addDrawable(std::move(dynamicDrawable), m_bodyFullbright);
-      } else {
+      }
+
+      if (!handledDynamics) {
         auto drawable = Drawable::makeImage(m_useBodyHeadMask ? image : std::move(image), 1.0f / TilePixels, true, {});
         drawable.imagePart().addDirectives(bodyDirectives, true);
         if (m_useBodyMask && !bodyMaskFrameset.empty()) {
@@ -1396,10 +1402,11 @@ List<Drawable> Humanoid::render(bool withItems, bool withRotationAndScale) {
             position[1] += bobYOffset;
 
           bool applyDynamics = chest->dynamics && m_identity.gender == Gender::Female;
-          if (applyDynamics) {
+          bool handledDynamics = false;
+          if (applyDynamics && chest->frameset.findLast("/") != NPos) {
             String basePath = chest->frameset.substr(0, chest->frameset.findLast("/")) + "/dynamic/base/" + chest->frameset.substr(chest->frameset.findLast("/") + 1);
             String dynamicPath = chest->frameset.substr(0, chest->frameset.findLast("/")) + "/dynamic/" + chest->frameset.substr(chest->frameset.findLast("/") + 1);
-            if (Root::singleton().assets()->assetExists(AssetPath::split(basePath).basePath)) {
+            if (Root::singleton().assets()->assetExists(AssetPath::split(basePath).basePath) && Root::singleton().assets()->assetExists(AssetPath::split(dynamicPath).basePath)) {
               String baseImage = String(image).replace(chest->frameset, basePath);
               auto baseDrawable = Drawable::makeImage(std::move(baseImage), 1.0f / TilePixels, true, position);
               baseDrawable.imagePart().addDirectives(chest->directives, true);
@@ -1409,13 +1416,15 @@ List<Drawable> Humanoid::render(bool withItems, bool withRotationAndScale) {
               auto dynamicDrawable = Drawable::makeImage(std::move(dynamicImage), 1.0f / TilePixels, true, position + m_chestDynamicsOffset);
               dynamicDrawable.imagePart().addDirectives(chest->directives, true);
               addDrawable(std::move(dynamicDrawable), chest->fullbright);
-              continue;
+              handledDynamics = true;
             }
           }
 
-          auto drawable = Drawable::makeImage(std::move(image), 1.0f / TilePixels, true, position);
-          drawable.imagePart().addDirectives(chest->directives, true);
-          addDrawable(std::move(drawable), chest->fullbright);
+          if (!handledDynamics) {
+            auto drawable = Drawable::makeImage(std::move(image), 1.0f / TilePixels, true, position);
+            drawable.imagePart().addDirectives(chest->directives, true);
+            addDrawable(std::move(drawable), chest->fullbright);
+          }
         }
       }
     }
@@ -1701,21 +1710,27 @@ List<Drawable> Humanoid::renderPortrait(PortraitMode mode) const {
       String image = strf("{}:{}{}", m_bodyFrameset, personality.idle, bodyDirectives.prefix());
 
       bool applyDynamics = m_identity.gender == Gender::Female;
-      String basePath = m_bodyFrameset.substr(0, m_bodyFrameset.findLast("/")) + "/dynamic/base/" + m_bodyFrameset.substr(m_bodyFrameset.findLast("/") + 1);
-      String dynamicPath = m_bodyFrameset.substr(0, m_bodyFrameset.findLast("/")) + "/dynamic/" + m_bodyFrameset.substr(m_bodyFrameset.findLast("/") + 1);
+      bool handledDynamics = false;
+      if (applyDynamics && m_bodyFrameset.findLast("/") != NPos) {
+        String basePath = m_bodyFrameset.substr(0, m_bodyFrameset.findLast("/")) + "/dynamic/base/" + m_bodyFrameset.substr(m_bodyFrameset.findLast("/") + 1);
+        String dynamicPath = m_bodyFrameset.substr(0, m_bodyFrameset.findLast("/")) + "/dynamic/" + m_bodyFrameset.substr(m_bodyFrameset.findLast("/") + 1);
 
-      if (applyDynamics && Root::singleton().assets()->assetExists(AssetPath::split(basePath).basePath)) {
-        String baseImage = String(image).replace(m_bodyFrameset, basePath);
-        Drawable baseDrawable = Drawable::makeImage(std::move(baseImage), 1.0f, true, {});
-        baseDrawable.imagePart().addDirectives(bodyDirectives, true);
-        addDrawable(std::move(baseDrawable));
+        if (Root::singleton().assets()->assetExists(AssetPath::split(basePath).basePath) && Root::singleton().assets()->assetExists(AssetPath::split(dynamicPath).basePath)) {
+          String baseImage = String(image).replace(m_bodyFrameset, basePath);
+          Drawable baseDrawable = Drawable::makeImage(std::move(baseImage), 1.0f, true, {});
+          baseDrawable.imagePart().addDirectives(bodyDirectives, true);
+          addDrawable(std::move(baseDrawable));
 
-        String dynamicImage = String(image).replace(m_bodyFrameset, dynamicPath);
-        // portrait gets zero dynamics offset, just renders the layered image
-        Drawable dynamicDrawable = Drawable::makeImage(std::move(dynamicImage), 1.0f, true, {});
-        dynamicDrawable.imagePart().addDirectives(bodyDirectives, true);
-        addDrawable(std::move(dynamicDrawable));
-      } else {
+          String dynamicImage = String(image).replace(m_bodyFrameset, dynamicPath);
+          // portrait gets zero dynamics offset, just renders the layered image
+          Drawable dynamicDrawable = Drawable::makeImage(std::move(dynamicImage), 1.0f, true, {});
+          dynamicDrawable.imagePart().addDirectives(bodyDirectives, true);
+          addDrawable(std::move(dynamicDrawable));
+          handledDynamics = true;
+        }
+      }
+
+      if (!handledDynamics) {
         Drawable drawable = Drawable::makeImage(std::move(image), 1.0f, true, {});
         drawable.imagePart().addDirectives(bodyDirectives, true);
         addDrawable(std::move(drawable));
@@ -1739,20 +1754,26 @@ List<Drawable> Humanoid::renderPortrait(PortraitMode mode) const {
             String image = strf("{}:{}{}", chest->frameset, personality.idle, chest->directives.prefix());
 
             bool applyDynamics = chest->dynamics && m_identity.gender == Gender::Female;
-            String basePath = chest->frameset.substr(0, chest->frameset.findLast("/")) + "/dynamic/base/" + chest->frameset.substr(chest->frameset.findLast("/") + 1);
-            String dynamicPath = chest->frameset.substr(0, chest->frameset.findLast("/")) + "/dynamic/" + chest->frameset.substr(chest->frameset.findLast("/") + 1);
+            bool handledDynamics = false;
+            if (applyDynamics && chest->frameset.findLast("/") != NPos) {
+              String basePath = chest->frameset.substr(0, chest->frameset.findLast("/")) + "/dynamic/base/" + chest->frameset.substr(chest->frameset.findLast("/") + 1);
+              String dynamicPath = chest->frameset.substr(0, chest->frameset.findLast("/")) + "/dynamic/" + chest->frameset.substr(chest->frameset.findLast("/") + 1);
 
-            if (applyDynamics && Root::singleton().assets()->assetExists(AssetPath::split(basePath).basePath)) {
-              String baseImage = String(image).replace(chest->frameset, basePath);
-              Drawable baseDrawable = Drawable::makeImage(std::move(baseImage), 1.0f, true, {});
-              baseDrawable.imagePart().addDirectives(chest->directives, true);
-              addDrawable(std::move(baseDrawable));
+              if (Root::singleton().assets()->assetExists(AssetPath::split(basePath).basePath) && Root::singleton().assets()->assetExists(AssetPath::split(dynamicPath).basePath)) {
+                String baseImage = String(image).replace(chest->frameset, basePath);
+                Drawable baseDrawable = Drawable::makeImage(std::move(baseImage), 1.0f, true, {});
+                baseDrawable.imagePart().addDirectives(chest->directives, true);
+                addDrawable(std::move(baseDrawable));
 
-              String dynamicImage = String(image).replace(chest->frameset, dynamicPath);
-              Drawable dynamicDrawable = Drawable::makeImage(std::move(dynamicImage), 1.0f, true, {});
-              dynamicDrawable.imagePart().addDirectives(chest->directives, true);
-              addDrawable(std::move(dynamicDrawable));
-            } else {
+                String dynamicImage = String(image).replace(chest->frameset, dynamicPath);
+                Drawable dynamicDrawable = Drawable::makeImage(std::move(dynamicImage), 1.0f, true, {});
+                dynamicDrawable.imagePart().addDirectives(chest->directives, true);
+                addDrawable(std::move(dynamicDrawable));
+                handledDynamics = true;
+              }
+            }
+
+            if (!handledDynamics) {
               Drawable drawable = Drawable::makeImage(std::move(image), 1.0f, true, {});
               drawable.imagePart().addDirectives(chest->directives, true);
               addDrawable(std::move(drawable));
