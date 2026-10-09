@@ -1313,8 +1313,8 @@ List<Drawable> Humanoid::render(bool withItems, bool withRotationAndScale) {
       String image = strf("{}:{}",bodyFrameset,frameName);
 
       bool applyDynamics = m_identity.gender == Gender::Female;
-      String basePath = bodyFrameset.substr(0, bodyFrameset.find_last_of('/')) + "/dynamic/base/" + bodyFrameset.substr(bodyFrameset.find_last_of('/') + 1);
-      String dynamicPath = bodyFrameset.substr(0, bodyFrameset.find_last_of('/')) + "/dynamic/" + bodyFrameset.substr(bodyFrameset.find_last_of('/') + 1);
+      String basePath = bodyFrameset.substr(0, bodyFrameset.findLast("/")) + "/dynamic/base/" + bodyFrameset.substr(bodyFrameset.findLast("/") + 1);
+      String dynamicPath = bodyFrameset.substr(0, bodyFrameset.findLast("/")) + "/dynamic/" + bodyFrameset.substr(bodyFrameset.findLast("/") + 1);
 
       if (applyDynamics && Root::singleton().assets()->assetExists(AssetPath::split(basePath).basePath)) {
         String baseImage = String(image).replace(bodyFrameset, basePath);
@@ -1328,7 +1328,7 @@ List<Drawable> Humanoid::render(bool withItems, bool withRotationAndScale) {
         addDrawable(std::move(baseDrawable), m_bodyFullbright);
 
         String dynamicImage = String(image).replace(bodyFrameset, dynamicPath);
-        auto dynamicDrawable = Drawable::makeImage(m_useBodyHeadMask ? dynamicImage : std::move(dynamicImage), 1.0f / TilePixels, true, m_chestDynamicsOffset / TilePixels);
+        auto dynamicDrawable = Drawable::makeImage(m_useBodyHeadMask ? dynamicImage : std::move(dynamicImage), 1.0f / TilePixels, true, m_chestDynamicsOffset);
         dynamicDrawable.imagePart().addDirectives(bodyDirectives, true);
         if (m_useBodyMask && !bodyMaskFrameset.empty()) {
           String maskImage = strf("{}:{}",bodyMaskFrameset,frameName);
@@ -1397,8 +1397,8 @@ List<Drawable> Humanoid::render(bool withItems, bool withRotationAndScale) {
 
           bool applyDynamics = chest->dynamics && m_identity.gender == Gender::Female;
           if (applyDynamics) {
-            String basePath = chest->frameset.substr(0, chest->frameset.find_last_of('/')) + "/dynamic/base/" + chest->frameset.substr(chest->frameset.find_last_of('/') + 1);
-            String dynamicPath = chest->frameset.substr(0, chest->frameset.find_last_of('/')) + "/dynamic/" + chest->frameset.substr(chest->frameset.find_last_of('/') + 1);
+            String basePath = chest->frameset.substr(0, chest->frameset.findLast("/")) + "/dynamic/base/" + chest->frameset.substr(chest->frameset.findLast("/") + 1);
+            String dynamicPath = chest->frameset.substr(0, chest->frameset.findLast("/")) + "/dynamic/" + chest->frameset.substr(chest->frameset.findLast("/") + 1);
             if (Root::singleton().assets()->assetExists(AssetPath::split(basePath).basePath)) {
               String baseImage = String(image).replace(chest->frameset, basePath);
               auto baseDrawable = Drawable::makeImage(std::move(baseImage), 1.0f / TilePixels, true, position);
@@ -1406,7 +1406,7 @@ List<Drawable> Humanoid::render(bool withItems, bool withRotationAndScale) {
               addDrawable(std::move(baseDrawable), chest->fullbright);
 
               String dynamicImage = String(image).replace(chest->frameset, dynamicPath);
-              auto dynamicDrawable = Drawable::makeImage(std::move(dynamicImage), 1.0f / TilePixels, true, position + m_chestDynamicsOffset / TilePixels);
+              auto dynamicDrawable = Drawable::makeImage(std::move(dynamicImage), 1.0f / TilePixels, true, position + m_chestDynamicsOffset);
               dynamicDrawable.imagePart().addDirectives(chest->directives, true);
               addDrawable(std::move(dynamicDrawable), chest->fullbright);
               continue;
@@ -1701,8 +1701,8 @@ List<Drawable> Humanoid::renderPortrait(PortraitMode mode) const {
       String image = strf("{}:{}{}", m_bodyFrameset, personality.idle, bodyDirectives.prefix());
 
       bool applyDynamics = m_identity.gender == Gender::Female;
-      String basePath = m_bodyFrameset.substr(0, m_bodyFrameset.find_last_of('/')) + "/dynamic/base/" + m_bodyFrameset.substr(m_bodyFrameset.find_last_of('/') + 1);
-      String dynamicPath = m_bodyFrameset.substr(0, m_bodyFrameset.find_last_of('/')) + "/dynamic/" + m_bodyFrameset.substr(m_bodyFrameset.find_last_of('/') + 1);
+      String basePath = m_bodyFrameset.substr(0, m_bodyFrameset.findLast("/")) + "/dynamic/base/" + m_bodyFrameset.substr(m_bodyFrameset.findLast("/") + 1);
+      String dynamicPath = m_bodyFrameset.substr(0, m_bodyFrameset.findLast("/")) + "/dynamic/" + m_bodyFrameset.substr(m_bodyFrameset.findLast("/") + 1);
 
       if (applyDynamics && Root::singleton().assets()->assetExists(AssetPath::split(basePath).basePath)) {
         String baseImage = String(image).replace(m_bodyFrameset, basePath);
@@ -1739,8 +1739,8 @@ List<Drawable> Humanoid::renderPortrait(PortraitMode mode) const {
             String image = strf("{}:{}{}", chest->frameset, personality.idle, chest->directives.prefix());
 
             bool applyDynamics = chest->dynamics && m_identity.gender == Gender::Female;
-            String basePath = chest->frameset.substr(0, chest->frameset.find_last_of('/')) + "/dynamic/base/" + chest->frameset.substr(chest->frameset.find_last_of('/') + 1);
-            String dynamicPath = chest->frameset.substr(0, chest->frameset.find_last_of('/')) + "/dynamic/" + chest->frameset.substr(chest->frameset.find_last_of('/') + 1);
+            String basePath = chest->frameset.substr(0, chest->frameset.findLast("/")) + "/dynamic/base/" + chest->frameset.substr(chest->frameset.findLast("/") + 1);
+            String dynamicPath = chest->frameset.substr(0, chest->frameset.findLast("/")) + "/dynamic/" + chest->frameset.substr(chest->frameset.findLast("/") + 1);
 
             if (applyDynamics && Root::singleton().assets()->assetExists(AssetPath::split(basePath).basePath)) {
               String baseImage = String(image).replace(chest->frameset, basePath);
