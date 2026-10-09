@@ -1316,7 +1316,7 @@ List<Drawable> Humanoid::render(bool withItems, bool withRotationAndScale) {
       String basePath = bodyFrameset.substr(0, bodyFrameset.find_last_of('/')) + "/dynamic/base/" + bodyFrameset.substr(bodyFrameset.find_last_of('/') + 1);
       String dynamicPath = bodyFrameset.substr(0, bodyFrameset.find_last_of('/')) + "/dynamic/" + bodyFrameset.substr(bodyFrameset.find_last_of('/') + 1);
 
-      if (applyDynamics && Root::singleton().assets()->imageExists(AssetPath::split(basePath).basePath)) {
+      if (applyDynamics && Root::singleton().assets()->assetExists(AssetPath::split(basePath).basePath)) {
         String baseImage = String(image).replace(bodyFrameset, basePath);
         auto baseDrawable = Drawable::makeImage(m_useBodyHeadMask ? baseImage : std::move(baseImage), 1.0f / TilePixels, true, {});
         baseDrawable.imagePart().addDirectives(bodyDirectives, true);
@@ -1399,7 +1399,7 @@ List<Drawable> Humanoid::render(bool withItems, bool withRotationAndScale) {
           if (applyDynamics) {
             String basePath = chest->frameset.substr(0, chest->frameset.find_last_of('/')) + "/dynamic/base/" + chest->frameset.substr(chest->frameset.find_last_of('/') + 1);
             String dynamicPath = chest->frameset.substr(0, chest->frameset.find_last_of('/')) + "/dynamic/" + chest->frameset.substr(chest->frameset.find_last_of('/') + 1);
-            if (Root::singleton().assets()->imageExists(AssetPath::split(basePath).basePath)) {
+            if (Root::singleton().assets()->assetExists(AssetPath::split(basePath).basePath)) {
               String baseImage = String(image).replace(chest->frameset, basePath);
               auto baseDrawable = Drawable::makeImage(std::move(baseImage), 1.0f / TilePixels, true, position);
               baseDrawable.imagePart().addDirectives(chest->directives, true);
@@ -1704,7 +1704,7 @@ List<Drawable> Humanoid::renderPortrait(PortraitMode mode) const {
       String basePath = m_bodyFrameset.substr(0, m_bodyFrameset.find_last_of('/')) + "/dynamic/base/" + m_bodyFrameset.substr(m_bodyFrameset.find_last_of('/') + 1);
       String dynamicPath = m_bodyFrameset.substr(0, m_bodyFrameset.find_last_of('/')) + "/dynamic/" + m_bodyFrameset.substr(m_bodyFrameset.find_last_of('/') + 1);
 
-      if (applyDynamics && Root::singleton().assets()->imageExists(AssetPath::split(basePath).basePath)) {
+      if (applyDynamics && Root::singleton().assets()->assetExists(AssetPath::split(basePath).basePath)) {
         String baseImage = String(image).replace(m_bodyFrameset, basePath);
         Drawable baseDrawable = Drawable::makeImage(std::move(baseImage), 1.0f, true, {});
         baseDrawable.imagePart().addDirectives(bodyDirectives, true);
@@ -1742,7 +1742,7 @@ List<Drawable> Humanoid::renderPortrait(PortraitMode mode) const {
             String basePath = chest->frameset.substr(0, chest->frameset.find_last_of('/')) + "/dynamic/base/" + chest->frameset.substr(chest->frameset.find_last_of('/') + 1);
             String dynamicPath = chest->frameset.substr(0, chest->frameset.find_last_of('/')) + "/dynamic/" + chest->frameset.substr(chest->frameset.find_last_of('/') + 1);
 
-            if (applyDynamics && Root::singleton().assets()->imageExists(AssetPath::split(basePath).basePath)) {
+            if (applyDynamics && Root::singleton().assets()->assetExists(AssetPath::split(basePath).basePath)) {
               String baseImage = String(image).replace(chest->frameset, basePath);
               Drawable baseDrawable = Drawable::makeImage(std::move(baseImage), 1.0f, true, {});
               baseDrawable.imagePart().addDirectives(chest->directives, true);
