@@ -660,10 +660,10 @@ void Npc::tickShared(float dt) {
     m_movementController->controlFace(*overrideDirection);
 
   if (world()->isClient()) {
-    humanoid()->animate(dt, &m_humanoidDynamicTarget);
+    humanoid()->animate(dt, &m_humanoidDynamicTarget, m_movementController->velocity());
     m_humanoidDynamicTarget.updatePosition(position());
   } else {
-    humanoid()->animate(dt, {});
+    humanoid()->animate(dt, {}, m_movementController->velocity());
   }
   m_scriptedAnimator.update();
 }
