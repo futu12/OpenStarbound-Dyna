@@ -1,6 +1,17 @@
 {
 	"headRotationCenter" : [0,-2],
 
+	// StarExtensions Dynamics Physics settings.
+	// Adjust these to change how bouncy the chest physics simulation is:
+	// - chestDynamicsSpringStiffness: How quickly it snaps back (higher = tighter)
+	// - chestDynamicsSpringDamping: How quickly the bouncing settles (higher = less wobbly)
+	// - chestDynamicsYVelocityInfluence: How much vertical movement affects the bounce
+	// - chestDynamicsXVelocityInfluence: How much horizontal movement affects the bounce
+	"chestDynamicsSpringStiffness" : 150.0,
+	"chestDynamicsSpringDamping" : 10.0,
+	"chestDynamicsYVelocityInfluence" : 0.15,
+	"chestDynamicsXVelocityInfluence" : 0.05,
+
 	"bodyFullbrightParts" : [
 		"body",
 		"frontArm",
