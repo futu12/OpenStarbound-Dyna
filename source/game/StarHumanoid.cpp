@@ -403,6 +403,11 @@ bool Humanoid::loadConfig(Json merger, bool forceRefresh) {
   m_legsArmorOffset = jsonToVec2F(config.get("legsArmorOffset")) / TilePixels;
   m_backArmorOffset = jsonToVec2F(config.get("backArmorOffset")) / TilePixels;
 
+  m_chestDynamicsSpringStiffness = config.get("chestDynamicsSpringStiffness", 150.0).toDouble();
+  m_chestDynamicsSpringDamping = config.get("chestDynamicsSpringDamping", 10.0).toDouble();
+  m_chestDynamicsYVelocityInfluence = config.get("chestDynamicsYVelocityInfluence", 0.15).toDouble();
+  m_chestDynamicsXVelocityInfluence = config.get("chestDynamicsXVelocityInfluence", 0.05).toDouble();
+
   m_bodyHidden = config.getBool("bodyHidden", false);
 
   m_armWalkSeq = jsonToIntList(config.get("armWalkSeq"));
@@ -921,14 +926,11 @@ void Humanoid::animate(float dt, NetworkedAnimator::DynamicTarget * dynamicTarge
     m_lastVelocity = *velocity;
 
     // Convert to tile coordinates directly to avoid dividing later
-    m_chestDynamicsVelocity[1] -= (velocityDiff[1] * 0.15f) / TilePixels;
-    m_chestDynamicsVelocity[0] -= (velocityDiff[0] * 0.05f) / TilePixels;
+    m_chestDynamicsVelocity[1] -= (velocityDiff[1] * m_chestDynamicsYVelocityInfluence) / TilePixels;
+    m_chestDynamicsVelocity[0] -= (velocityDiff[0] * m_chestDynamicsXVelocityInfluence) / TilePixels;
 
-    float springStiffness = 150.0f;
-    float damping = 10.0f;
-
-    Vec2F springForce = m_chestDynamicsOffset * -springStiffness;
-    Vec2F dampingForce = m_chestDynamicsVelocity * -damping;
+    Vec2F springForce = m_chestDynamicsOffset * -m_chestDynamicsSpringStiffness;
+    Vec2F dampingForce = m_chestDynamicsVelocity * -m_chestDynamicsSpringDamping;
 
     // StarExtensions Dynamics Physics:
     // This calculates a damped spring simulation using the character's velocity changes.

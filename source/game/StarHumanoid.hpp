@@ -399,6 +399,12 @@ private:
   bool m_useBodyMask;
   bool m_useBodyHeadMask;
 
+  // StarExtensions Dynamics config parameters
+  float m_chestDynamicsSpringStiffness;
+  float m_chestDynamicsSpringDamping;
+  float m_chestDynamicsYVelocityInfluence;
+  float m_chestDynamicsXVelocityInfluence;
+
   bool m_bodyHidden;
 
   List<int> m_armWalkSeq;
