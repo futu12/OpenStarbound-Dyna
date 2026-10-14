@@ -404,6 +404,8 @@ private:
   float m_chestDynamicsSpringDamping;
   float m_chestDynamicsYVelocityInfluence;
   float m_chestDynamicsXVelocityInfluence;
+  float m_chestDynamicsOffsetLimitX;
+  float m_chestDynamicsOffsetLimitY;
 
   bool m_bodyHidden;
 

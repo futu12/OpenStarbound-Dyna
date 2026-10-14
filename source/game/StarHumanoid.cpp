@@ -407,6 +407,8 @@ bool Humanoid::loadConfig(Json merger, bool forceRefresh) {
   m_chestDynamicsSpringDamping = config.get("chestDynamicsSpringDamping", 10.0).toDouble();
   m_chestDynamicsYVelocityInfluence = config.get("chestDynamicsYVelocityInfluence", 0.15).toDouble();
   m_chestDynamicsXVelocityInfluence = config.get("chestDynamicsXVelocityInfluence", 0.05).toDouble();
+  m_chestDynamicsOffsetLimitX = config.get("chestDynamicsOffsetLimitX", 1.0).toDouble();
+  m_chestDynamicsOffsetLimitY = config.get("chestDynamicsOffsetLimitY", 1.0).toDouble();
 
   m_bodyHidden = config.getBool("bodyHidden", false);
 
@@ -941,8 +943,8 @@ void Humanoid::animate(float dt, NetworkedAnimator::DynamicTarget * dynamicTarge
     m_chestDynamicsOffset += m_chestDynamicsVelocity * cappedDt;
 
     // Clamp the offset to prevent explosive physical glitches
-    m_chestDynamicsOffset[0] = clamp(m_chestDynamicsOffset[0], -0.2f, 0.2f);
-    m_chestDynamicsOffset[1] = clamp(m_chestDynamicsOffset[1], -0.2f, 0.2f);
+    m_chestDynamicsOffset[0] = clamp(m_chestDynamicsOffset[0], -m_chestDynamicsOffsetLimitX, m_chestDynamicsOffsetLimitX);
+    m_chestDynamicsOffset[1] = clamp(m_chestDynamicsOffset[1], -m_chestDynamicsOffsetLimitY, m_chestDynamicsOffsetLimitY);
   } else {
     m_lastVelocity.reset();
     m_chestDynamicsVelocity = Vec2F();
